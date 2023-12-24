@@ -1,0 +1,6 @@
+venv
+.venv
+*.docx
+*.tmp
+__pycache__
+app\MiniApps\DrawApp\SavedDrawImages
