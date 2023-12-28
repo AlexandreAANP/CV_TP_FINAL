@@ -56,31 +56,29 @@ from Controls import Controls
 from MiniApps.DrawApp.Draw import Draw
 from MiniApps.FaceReplaceApp.FaceReplace import FaceReplace
 from MiniApps.AvoidObjects.AvoidObjects import AvoidObjects
+from Mouse import Mouse
 if __name__ == "__main__":
-    import os
-    dir_path = os.path.dirname(os.path.realpath(__file__))
+    PROJECT_PATH
     cap = cv.VideoCapture(0)
     _, frame = cap.read()
+    Mouse()
     AvoidObjects(
-        dir_path+"/images/AvoidObjectsApp/Animations/animationsImages/",
-        dir_path+"/images/AvoidObjectsApp/Animations/animationsImagesMask/",
+       PROJECT_PATH+"/images/AvoidObjectsApp/Animations/animationsImages/",
+       PROJECT_PATH+"/images/AvoidObjectsApp/Animations/animationsImagesMask/",
         frame.shape[1], frame.shape[0])
     FaceReplace(
-        dir_path+"/images/FaceReplaceApp/faces/",
+       PROJECT_PATH+"/images/FaceReplaceApp/faces/",
         frame.shape[1],
         frame.shape[0])
     Draw(
-        dir_path+"/images/Draw/newPage.png",
-        dir_path+"/images/Draw/save.png",
+       PROJECT_PATH+"/images/Draw/newPage.png",
+       PROJECT_PATH+"/images/Draw/save.png",
         frame.shape[1],
         frame.shape[0])
     # Set mediapipe model
     with mp_holistic.Holistic(
         min_detection_confidence=0.5, min_tracking_confidence=0.5
     ) as holistic:
-        import os
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        poseDetection = None
         while cv.pollKey() == -1:
             _, frame = cap.read()
             # Make detections
@@ -94,11 +92,7 @@ if __name__ == "__main__":
             frameToShow = AvoidObjects.get().run(results, frameToShow)
             frameToShow = Draw.get().run(results, frameToShow)
             frameToShow = FaceReplace.get().run(results, frameToShow)
-            #TODO DrawMouse replace the code below for that function
-            coords = SelectEvent.detect(results.right_hand_landmarks)
-            coords = coords.coords if coords is not None else None
-            if coords:
-                 cv.circle(frameToShow, (int(coords[0]*frameToShow.shape[1]), int(coords[1]*frameToShow.shape[0])), 5, (255, 0, 255), -1)
+            frameToShow = Mouse.get().run(results.right_hand_landmarks, frameToShow) if results.right_hand_landmarks else frameToShow
             #TO Remove
             if results.right_hand_landmarks:
                 testPoseLandmarks(results.right_hand_landmarks.landmark, testFrame) #TO REMOVE
