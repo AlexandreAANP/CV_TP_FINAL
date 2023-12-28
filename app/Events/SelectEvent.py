@@ -17,14 +17,12 @@ class SelectEvent(Event):
             return None
         #The click should be detected when the finger 1 is the only one up
         FingersUp = cls.detectWhichFingerIsUp(landsmark.landmark)
-        print(len(FingersUp.keys()))
-        if len(FingersUp.keys()) <= 2 and len(FingersUp.keys()) > 0:
-            #ignore THUMB finger
-            if "THUMB" in FingersUp.keys():
-                if cls.FINGER_SHOULD_BE_UP in FingersUp.keys():
-                    coords = (FingersUp[cls.FINGER_SHOULD_BE_UP][0].x, FingersUp[cls.FINGER_SHOULD_BE_UP][0].y)
-                    print(coords)
-                    return Event(coords, SelectEvent)
+        fingers_up = len(FingersUp.keys())
+        if (fingers_up == 2 and "THUMB" in FingersUp.keys()) or fingers_up == 1:
+            if cls.FINGER_SHOULD_BE_UP in FingersUp.keys():
+                coords = (FingersUp[cls.FINGER_SHOULD_BE_UP][0].x, FingersUp[cls.FINGER_SHOULD_BE_UP][0].y)
+                print(coords)
+                return SelectEvent(coords, SelectEvent)
         return None
     
 

@@ -1,13 +1,25 @@
 import Utils
 import cv2 as cv
 import mediapipe as mp
+from Icon import Icon
+from MiniApps.MiniApp import MiniApp
 mp_holistic = mp.solutions.holistic
 mediapipe_detection = lambda image: holistic.process(cv.cvtColor(image, cv.COLOR_BGR2RGB))
-
-class FaceReplace():
-    this = None
-    def __init__(self, listPathReplaceFace: list):
-        FaceReplace.this = self
+import os
+class FaceReplace(MiniApp):
+    __app_name = "FaceReplaceApp"
+    __instance = None
+    PATH = os.path.dirname(os.path.realpath(__file__)).replace("\MiniApps\FaceReplaceApp", "")
+    
+    PATH_ARROW_ICON = PATH+"\\images\\FaceReplaceApp\\arrow.png"
+    
+    def __init__(self, path: str, width, height):
+        FaceReplace.__instance = self
+        super().__init__(FaceReplace.__app_name,
+                         Icon(Utils.PROJECT_PATH+"/images/obama.png",(0,45), FaceReplace.__app_name))
+        listPathReplaceFace = Utils.getAllFilesPathFromFolder(path)
+        self.rigth_icon = Icon(FaceReplace.PATH_ARROW_ICON, (0,int(height/2 - Icon.HEIGHT/2)), "FaceReplaceApp_Arrow_Left", flip = True)
+        self.left_icon = Icon(FaceReplace.PATH_ARROW_ICON, (width-70,int(height/2 - Icon.HEIGHT/2)), "FaceReplaceApp_Arrow_Rigth", flip=False)
         self.faces_landsmarks = []
         self.CategorizedFacePointsList = []
         self.faces = []
@@ -19,6 +31,7 @@ class FaceReplace():
                 img = cv.imread(path)
                 self.results = holistic.process(img)
                 if self.results.face_landmarks is None:
+                    print(path, "no face detected")
                     continue #no face detected
                 self.faces_landsmarks.append(self.results.face_landmarks)
                 self.CategorizedFacePointsList.append(self.CategorizedFacePoints(self.results.face_landmarks.landmark))
@@ -27,27 +40,53 @@ class FaceReplace():
         self.faceNumber = len(self.faces)
         self.faceIndex = 0
         self.isOpen = False
+    @classmethod  
+    def get(cls):
+        if cls.__instance:
+            return cls.__instance
+        raise Exception("FaceReplaceApp not initialized")
+    
+    @classmethod
+    def get_app_name(cls):
+        return cls.__app_name
+    
+    def changeFace(self, direction):
+        if direction == "left":
+            self.faceIndex -= 1 if self.faceIndex > 0 else 0
+            return True
+        elif direction == "right":
+            self.faceIndex += 1 if self.faceIndex < self.faceNumber-1 else 0
+            return True
+        return False
+    
+    def inRangeLeftIcon(self, coords, frame):
+        return self.left_icon.inRange(coords, frame)
+    def inRangeRightIcon(self, coords, frame):
+        return self.rigth_icon.inRange(coords, frame)
+            
+      
         
-        
-    def replaceFace(self, frame, results):
+    def run(self,landmarks,frame):
         if not self.isOpen:
             return frame
-        if results is None or results.face_landmarks is None:
+        self.rigth_icon.putImageInFrame(frame)
+        self.left_icon.putImageInFrame(frame)
+        if landmarks is None or landmarks.face_landmarks is None:
             return frame
 
-        coords, shape = self.getCoordsAndSquareShape(results.face_landmarks.landmark, frame)
-        newfaceFrame = frame.copy()[coords[1]:coords[1]+shape[0], coords[0]:coords[0]+shape[1]]
+        coords, shape = self.getCoordsAndSquareShape(landmarks.face_landmarks.landmark, frame)
+        
         face,mask = self.resizeFace(shape[1],shape[0])
-        coordNose = results.face_landmarks.landmark[Utils.NOSE_CENTER]#coords from results
+        coordNose = landmarks.face_landmarks.landmark[Utils.NOSE_CENTER]#coords from landmarks
         coordsNoseFace = self.coordsRelativeOfFrame(coords, face.shape)#coords from face img
-        #difference between coords from results and coords from face img
+        #difference between coords from landmarks and coords from face img
         x = int((coordNose.x * frame.shape[1]) - coordsNoseFace[0])
         y = int((coordNose.y * frame.shape[0]) - coordsNoseFace[1])
         #replace to the new coords
         coords = (coords[0]+x, coords[1]+y)
         
         #size of the face
-        newShape = self.sizeFromFacePorportion(frame, results, self.faces[self.faceIndex])
+        newShape = self.sizeFromFacePorportion(frame, landmarks, self.faces[self.faceIndex])
         face,mask = self.resizeFace(newShape[1],newShape[0])
         partOfFrame = frame[coords[1]:coords[1]+newShape[0], coords[0]:coords[0]+newShape[1]]
         if partOfFrame.shape[0] != face.shape[0] or partOfFrame.shape[1] != face.shape[1]:
@@ -172,6 +211,7 @@ class FaceReplace():
     
     def open(self):
         self.isOpen = True
+    
     def close(self):
         self.isOpen = False
         

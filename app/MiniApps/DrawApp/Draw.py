@@ -4,13 +4,19 @@ import Colors
 
 from Events.SelectEvent import SelectEvent
 from Icon import Icon
-class Draw:
+from MiniApps.MiniApp import MiniApp
+import Utils
+class Draw(MiniApp):
     buttonCloseWidth = 35
     buttonCloseHeight = 20
     
     
-    this = None
+    __instance = None
+    __app_name = "DrawApp"
     def __init__(self, drawIconPath: str, saveIconPath: str, width = 640, height = 480):
+        super().__init__(Draw.__app_name,
+                         Icon(Utils.PROJECT_PATH+"/images/DrawAppLogo.png",(width-Icon.WIDTH,9), Draw.__app_name))
+        Draw.__instance = self
         self.clearIcon = Icon(drawIconPath, (0, int(height*0.25)),"cleanIcon", 0.5, False)
         self.saveIcon = Icon(saveIconPath, (0, int(height*0.25)+10+self.clearIcon.height),"saveIcon", 0.5, False)
         self.landmarks = None
@@ -19,17 +25,26 @@ class Draw:
         self.isOpen = False
         self.baseFrame = self.DrawBaseBackground()
         self.lastDraw = self.baseFrame.copy()
-        Draw.this = self
-       
+    
+    @classmethod
+    def get(cls):
+        if cls.__instance is None:
+            raise Exception("Draw not initialized")
+        return cls.__instance
+    @classmethod
+    def get_app_name(cls):
+        return cls.__app_name
+    
+     
     def DrawBaseBackground(self):
         baseFrame = np.zeros((self.heigth, self.width, 3), np.uint8)
         baseFrame = self.drawNavBar(baseFrame)
         baseFrame = self.drawWhiteBoard(baseFrame)
         return baseFrame
         
-    def run(self, landmarks):
+    def run(self, landmarks, frame):
         if not self.isOpen:
-            return None
+            return frame
         self.lastDraw = self.clearIcon.putImageInFrame(self.lastDraw)
         self.lastDraw = self.saveIcon.putImageInFrame(self.lastDraw)
         self.landmarks = landmarks

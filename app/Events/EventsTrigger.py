@@ -1,11 +1,16 @@
 class EventsTrigger():
-    this = None
+    instance = None
     def __init__(self):
         self.__events = []
         self.__previuosEvents = []
         self.length = 0
-        EventsTrigger.this = self
+        EventsTrigger.instance = self
         
+    @classmethod
+    def get(cls):
+        if not EventsTrigger.instance:
+            EventsTrigger.instance = EventsTrigger()
+        return EventsTrigger.instance  
     def push(self, event):
         if event is None:
             return

@@ -2,81 +2,108 @@ from Events.EventsTrigger import EventsTrigger
 from Events.SelectEvent import SelectEvent
 from Events.OpenFaceReplaceAppEvent import OpenFaceReplaceAppEvent
 from Events.OpenDrawAppEvent import OpenDrawAppEvent
+from Events.OpenAppEvent import OpenAppEvent
 from Events.CloseDrawAppEvent import CloseDrawAppEvent
+from Events.CloseAppEvent import CloseAppEvent
 from MiniApps.DrawApp.Draw import Draw
 from MiniApps.FaceReplaceApp.FaceReplace import FaceReplace
+from MiniApps.AvoidObjects.AvoidObjects import AvoidObjects
+from MiniApps.MiniApp import MiniApp
 from Icon import Icon
 import cv2 as cv
 import time
 class Controls:
-    def __init__(self, icons : list):
-        self.eventstrigger = EventsTrigger.this
-        self.icons = icons
+    instance = None
+    def __init__(self):
+        self.instance = self
+        self.eventstrigger = EventsTrigger.get()
+        self.icons = MiniApp.getAllAppIcons()
         self.Object = None
         self.start = None
         
+    @classmethod
+    def get(cls):
+        if Controls.instance is None:
+            Controls.instance = Controls()
+        return Controls.instance
+        
     def setObjectTime(self, coords, Object):
         if self.Object != Object:
-            self.start = None
-        self.Object = Object
-        if self.start is None:
             self.start = time.time()
+            self.Object = Object
+            return
         if time.time() - self.start > 2:
-            if Draw.this.isOpen:
-                if self.Object == Draw.this.clearIcon:
+            if Draw.get().isOpen:
+                if self.Object == Draw.get().clearIcon:
                     self.start = None
                     self.Object = None
-                    Draw.this.clean()
-                if self.Object == Draw.this.saveIcon:
+                    Draw.get().clean()
+                if self.Object == Draw.get().saveIcon:
                     self.start = None
                     self.Object = None
-                    Draw.this.save()
+                    Draw.get().save()
+            if FaceReplace.get().isOpen:
+                print(self.Object, FaceReplace.get().icon)
+                if self.Object == FaceReplace.get().left_icon:
+                    self.start = None
+                    self.Object = None
+                    FaceReplace.get().changeFace("left")
+                elif self.Object == FaceReplace.get().rigth_icon:
+                    self.start = None
+                    self.Object = None
+                    FaceReplace.get().changeFace("right")
+                elif self.Object == FaceReplace.get().icon:
+                    self.start = None
+                    self.Object = None
+                    print("Colsingall apps")
+                    MiniApp.CloseAllApps()
+                    print(MiniApp.which_app_is_open())
+           
             if type(self.Object) is Icon:
-                if not FaceReplace.this.isOpen and self.Object.name == "DrawApp":
+                to_open = MiniApp.get_app_by_icon(self.Object)
+                if to_open:
                     self.start = None
                     self.Object = None
-                    return OpenDrawAppEvent(coords)
-                if not Draw.this.isOpen and self.Object.name == "FaceReplaceApp":
-                    self.start = None
-                    self.Object = None
-                    return OpenFaceReplaceAppEvent(coords)
+                    OpenAppEvent(coords, to_open)
             if type(self.Object) is Draw:
                 self.start = None
                 self.Object = None
-                return CloseDrawAppEvent(coords)
+                return CloseAppEvent(coords, Draw.get_app_name())
             
-    
-    def resetTime():
-        pass
         
-    def checkEvents(self, frame):
+    def checkEvents(self,frame):
         while self.eventstrigger.length > 0:
             event = self.eventstrigger.pop()
             if event is None:
-                continue
-            if event.type is CloseDrawAppEvent:
-                Draw.this.close()
-                for icon in self.icons:
-                    icon.show()
-            if event.type is OpenDrawAppEvent:
-                Draw.this.open()
-                for icon in self.icons:
-                    icon.hide()
-                cv.putText(frame, "CLICK ICON", (200, 200), cv.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 255), 2)
-            if event.type is OpenFaceReplaceAppEvent:
-                FaceReplace.this.open()
-            if event.type is SelectEvent:
-                if Draw.this.isOpen:
-                    if Draw.this.inRangeClose(event.coords, frame):
-                        self.setObjectTime(event.coords, Draw.this)
-                    if Draw.this.inRangeClear(event.coords, frame):
-                        self.setObjectTime(event.coords, Draw.this.clearIcon)
-                    if Draw.this.inRangeSave(event.coords, frame):
-                        self.setObjectTime(event.coords, Draw.this.saveIcon)
+                return
+            elif event.type is OpenAppEvent:
+                MiniApp.OpenApp(event.app_name)
+            elif event.type is CloseAppEvent:
+                MiniApp.CloseAllApps()
+            elif event.type is SelectEvent:
+                #Mouse select
+                #frame = cv.circle(frame, (int(event.coords[0]*frame.shape[1]), int(event.coords[1]*frame.shape[0])), 5, (255, 0, 255), -1)
+                oppened_app = MiniApp.which_app_is_open()
+                if oppened_app:
+                    print(oppened_app)
+                    if oppened_app == FaceReplace.get_app_name():
+                        if FaceReplace.get().inRangeLeftIcon(event.coords, frame):
+                            self.setObjectTime(event.coords, FaceReplace.get().left_icon)
+                        if FaceReplace.get().inRangeRightIcon(event.coords, frame):
+                            self.setObjectTime(event.coords, FaceReplace.get().rigth_icon)
+                        if FaceReplace.get().icon.inRange(event.coords, frame):
+                            self.setObjectTime(event.coords, FaceReplace.get().icon)
+                    elif oppened_app == Draw.get_app_name():
+                        if Draw.get().inRangeClose(event.coords, frame):
+                            self.setObjectTime(event.coords, Draw.get())
+                        if Draw.get().inRangeClear(event.coords, frame):
+                            self.setObjectTime(event.coords, Draw.get().clearIcon)
+                        if Draw.get().inRangeSave(event.coords, frame):
+                            self.setObjectTime(event.coords, Draw.get().saveIcon)
                 else:    
                     for icon in self.icons:
                         if icon.inRange(event.coords, frame):
                             self.setObjectTime(event.coords,icon)
-                    cv.putText(frame, "Select", (200, 200), cv.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 255), 2)
+                    
     
     

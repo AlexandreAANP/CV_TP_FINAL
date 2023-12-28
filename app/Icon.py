@@ -5,15 +5,20 @@ class Icon:
     WIDTH = 70
     HEIGHT = 70
     CLICK_TIME_SECONDS = 2
-    def __init__(self,path :str, coords: tuple,name, f:float = 1.0, isHidden = True):
+    def __init__(self,path :str, coords: tuple,name, f:float = 1.0, isHidden = True, flip = False):
         self.name = name
         self.x = coords[0]
         self.y = coords[1]
         self.width = int(Icon.WIDTH * f)
         self.height = int(Icon.HEIGHT * f)
-        self.image = cv.imread(path)
+        if flip:
+            self.image = cv.flip(cv.imread(path), 1)
+            self.mask = CreateMask(cv.flip(cv.imread(path, cv.IMREAD_UNCHANGED),1))
+        else:
+            self.image = cv.imread(path)
+            self.mask = CreateMask(cv.imread(path, cv.IMREAD_UNCHANGED))
         self.image = cv.resize(self.image, (self.width, self.height))
-        self.mask = CreateMask(cv.imread(path, cv.IMREAD_UNCHANGED))
+       
         self.mask = cv.resize(self.mask, (self.width, self.height))
         self.IsInRange = False
         self.beginClickTime = None

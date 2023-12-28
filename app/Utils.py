@@ -1,6 +1,7 @@
 import numpy as np
 import cv2 as cv
-
+import os
+PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
 # Left eyes indices 
 LEFT_EYE =[ 362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385,384, 398 ]
 LEFT_EYEBROW =[ 336, 296, 334, 293, 300, 276, 283, 282, 295, 285 ]
@@ -19,6 +20,13 @@ RIGTH_WIRST = 16
 LEFT_SHOULDER = 11
 LEFT_ELBOW = 13
 LEFT_WIRST = 15
+
+def getAllFilesPathFromFolder(path):
+    import os
+    images = []
+    for filename in os.listdir(path):
+        images.append(path+filename)
+    return images
 
 def areaOfShape(shape):
     return shape[0]*shape[1]
@@ -55,13 +63,13 @@ def middlePoint(p1, p2):
 #         if cv.contourArea(c) > area:
 #             return True
 
-def CreateMask(img):
+def CreateMask(img, BackgroundColor = (0,0,0)):
     import cv2 as cv
     if img.shape[2] < 4:
         img = cv.cvtColor(img, cv.COLOR_RGB2RGBA)
         for i in img[:, :, :]:
             for o in i:
-                if o[0]==0 and o[1]==0 and o[2]==0:
+                if o[0]==BackgroundColor[0] and o[1]==BackgroundColor[1] and o[2]==BackgroundColor[2]:
                     o[3] = 0
     ret, mask = cv.threshold(img[:, :, 3], 0, 255, cv.THRESH_BINARY)
     return mask
