@@ -7,7 +7,7 @@ class DrawGesture():
     def detect(self, landmarks) -> int or None:
         if landmarks is None or landmarks.right_hand_landmarks is None:
             return False
-        fingers_up = SelectEvent.detectWhichFingerIsUp(landmarks.right_hand_landmarks.landmark)
+        fingers_up = SelectEvent.detect_which_finger_is_up(landmarks.right_hand_landmarks.landmark)
         gesture_position = self.__is_draw_gesture(fingers_up)
         if gesture_position:
             return (1,gesture_position)

@@ -84,7 +84,7 @@ class Ninja(MiniApp):
         if not animationFrame:
             return False     
         if landsmarks.right_hand_landmarks:
-            fingersUp = SelectEvent.detectWhichFingerIsUp(landsmarks.right_hand_landmarks.landmark)
+            fingersUp = SelectEvent.detect_which_finger_is_up(landsmarks.right_hand_landmarks.landmark)
             if  len(fingersUp) <2:
                 if self.right_hand_is_closed == False:
                     self.right_hand_is_closed = True
@@ -94,7 +94,7 @@ class Ninja(MiniApp):
             self.right_hand_is_closed = False
             return False
         if landsmarks.left_hand_landmarks:
-            fingersUp = SelectEvent.detectWhichFingerIsUp(landsmarks.left_hand_landmarks.landmark)
+            fingersUp = SelectEvent.detect_which_finger_is_up(landsmarks.left_hand_landmarks.landmark)
             if len(fingersUp) <2:
                 if self.left_hand_is_closed == False:
                     self.left_hand_is_closed = True
@@ -129,7 +129,7 @@ class Ninja(MiniApp):
         return False   
     def __put_animation_in_frame(self, animation_frame: AnimationFrame, frame):
         if animation_frame:
-            return Utils.replaceBackgroundOfImage(animation_frame.img, frame, animation_frame.mask)
+            return Utils.replace_background_of_image(animation_frame.img, frame, animation_frame.mask)
         return frame
     
     def __generate_animation(self):

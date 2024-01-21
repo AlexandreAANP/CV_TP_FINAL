@@ -11,7 +11,7 @@ class ImageFaceDetection():
         self.results = self.__mediapipe_detection(self.image)
         if self.results.face_landmarks is None:
                 raise Exception("No face detected")
-        self.mask = Utils.CreateMask(cv.imread(path, cv.IMREAD_UNCHANGED))
+        self.mask = Utils.create_mask(cv.imread(path, cv.IMREAD_UNCHANGED))
         self.categorized_face_points = self.__categorized_face_points(self.results.face_landmarks.landmark)
         
     def replaceFace(self, landmarks, frame):
@@ -36,7 +36,7 @@ class ImageFaceDetection():
         part_of_frame = frame[coords[1]:coords[1]+newShape[0], coords[0]:coords[0]+newShape[1]]
         if part_of_frame.shape[0] != face.shape[0] or part_of_frame.shape[1] != face.shape[1]:
             return frame
-        frame[coords[1]:coords[1]+newShape[0], coords[0]:coords[0]+newShape[1]] = Utils.replaceBackgroundOfImage(face, part_of_frame, mask)
+        frame[coords[1]:coords[1]+newShape[0], coords[0]:coords[0]+newShape[1]] = Utils.replace_background_of_image(face, part_of_frame, mask)
         return frame
     
     
@@ -64,7 +64,7 @@ class ImageFaceDetection():
         
         Rp = (int(RightPoint[0]*frame.shape[1]), int(RightPoint[1]*frame.shape[0]))
         Lp = (int(LeftPoint[0]*frame.shape[1]), int(LeftPoint[1]*frame.shape[0]))
-        return Utils.distanceBetweenPoints(Lp, Rp)
+        return Utils.distance_between_points(Lp, Rp)
     
     def __coords_relative_frame(self, coords, shape):
         x = self.categorized_face_points["nose_center"][0].x * shape[1]
@@ -123,7 +123,7 @@ class ImageFaceDetection():
         v3 = tuple(v3)
         v4 = tuple(v4)
         
-        return (v1,(Utils.distanceBetweenPoints(v1,v3),Utils.distanceBetweenPoints(v1,v2)))
+        return (v1,(Utils.distance_between_points(v1,v3),Utils.distance_between_points(v1,v2)))
                 
     def __categorized_face_points(self, face_landmarks):
         res = {

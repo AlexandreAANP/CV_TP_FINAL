@@ -8,7 +8,6 @@ class Animation():
     CACHE_PATH = Utils.PROJECT_PATH+"/MiniApps/NinjaApp/Ninja_cache/"
     ANIMATIONS = []
     def __init__(self, name:str, path_images:str, path_mask:str, width:int, height:int):
-        print(width,height)
         for animation in Animation.ANIMATIONS:
             if animation.name == name:
                 raise Exception(f"Animation with name {name} already exists")
@@ -99,10 +98,10 @@ class Animation():
         start_end_points = []
         path_animation, path_animation_mask = self.paths
         
-        for path in Utils.getAllFilesPathFromFolder(path_animation):
+        for path in Utils.get_all_files_path_from_folder(path_animation):
             images.append(cv.resize(cv.imread(path),(self.width, self.height)))
             
-        for path in Utils.getAllFilesPathFromFolder(path_animation_mask):
+        for path in Utils.get_all_files_path_from_folder(path_animation_mask):
             _mask = cv.resize(cv.imread(path, cv.THRESH_BINARY),(self.width, self.height))
             mask.append(_mask)
             start_point, end_point = self.__calculate_object_shape(_mask)

@@ -28,16 +28,14 @@ if __name__ == "__main__":
 
             results = mediapipe_detection(frame)
             
-            EventsDetection.get().detectEvents(results)
+            EventsDetection.get().detect_events(results)
             
             frame = MiniApp.run_apps(results, frame)
 
             frame = Mouse.get().run(results.right_hand_landmarks, frame)
 
             for icon in MiniApp.get_all_app_icons():
-                icon.putImageInFrame(frame)
-            
-            
+                icon.put_image_in_frame(frame)
             
             Controls.get().check_events(frame)
             

@@ -35,8 +35,9 @@ class Paint():
         for icon in self.icons:
             saveImage = self.__remove_icon(icon, saveImage)
         saveImage = cv.flip(saveImage, 1)
-        cv.imwrite(f'{Utils.PROJECT_PATH}/MiniApps/DrawApp/SavedDrawImages/image_saved_{str(datetime.datetime.now().strftime("%Y_%m_%d__%I_%M_%S_%p"))}.png', saveImage)
-    
+        file_name = f'{Utils.PROJECT_PATH}/MiniApps/DrawApp/SavedDrawImages/image_saved_{str(datetime.datetime.now().strftime("%Y_%m_%d__%I_%M_%S_%p"))}.png'
+        cv.imwrite(file_name, saveImage)
+        print(f"Draw saved in {file_name}")
     def __remove_nav_bar(self, frame):
         frame = cv.rectangle(frame, (0,0), (frame.shape[1], 20), Colors.WHITE, -1)
         return frame

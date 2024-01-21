@@ -24,12 +24,12 @@ class Draw(MiniApp, EventInteraction):
         self.heigth = height
         self.isOpen = False
         self.event_type = None
+        self.timer = None
     
     def event(self, event, frame):
         if self.should_trigger_event(event):
             if self.in_range_close(event.coords, frame):
-                MiniApp.close_all_apps()
-                self.reset_event()
+                self.close()
             elif self.in_range_clear(event.coords, frame):
                 self.paint.clean_draw()
                 self.reset_event()
@@ -46,8 +46,8 @@ class Draw(MiniApp, EventInteraction):
             if action_point[0] == 2:
                 self.paint.clean_point(action_point[1])
         frame = self.paint.get_draw()
-        frame = self.clear_icon.putImageInFrame(frame)
-        frame = self.save_icon.putImageInFrame(frame)
+        frame = self.clear_icon.put_image_in_frame(frame)
+        frame = self.save_icon.put_image_in_frame(frame)
         return frame
     
     def in_range_close(self, coords, frame):

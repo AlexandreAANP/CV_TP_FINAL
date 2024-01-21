@@ -27,11 +27,12 @@ class FaceReplace(MiniApp, EventInteraction):
         self.left_icon = Icon(FaceReplace.PATH_ARROW_ICON, (width-70,int(height/2 - Icon.HEIGHT/2)), "FaceReplaceApp_Arrow_Rigth", flip=False)
         self.close_detection = CloseDetection(2, width, height)
         
-        list_path_replace_face = Utils.getAllFilesPathFromFolder(Utils.PROJECT_PATH+ "/images/FaceReplaceApp/faces/")
+        list_path_replace_face = Utils.get_all_files_path_from_folder(Utils.PROJECT_PATH+ "/images/FaceReplaceApp/faces/")
         self.images_face_detected = self.__detect_faces_from_images(list_path_replace_face)
         self.faceIndex = 0
         self.isOpen = False
         self.event_type = None
+        self.timer = None
     
     def event(self, event:Event, frame):
         if self.should_trigger_event(event):
@@ -52,9 +53,9 @@ class FaceReplace(MiniApp, EventInteraction):
         return False
     
     def in_range_left_icon(self, coords, frame):
-        return self.left_icon.inRange(coords, frame)
+        return self.left_icon.in_range(coords, frame)
     def in_range_right_icon(self, coords, frame):
-        return self.rigth_icon.inRange(coords, frame)
+        return self.rigth_icon.in_range(coords, frame)
           
     def open(self):
         self.isOpen = True
@@ -66,8 +67,8 @@ class FaceReplace(MiniApp, EventInteraction):
     def run(self,landmarks,frame):
         if not self.isOpen:
             return frame
-        self.rigth_icon.putImageInFrame(frame)
-        self.left_icon.putImageInFrame(frame)
+        self.rigth_icon.put_image_in_frame(frame)
+        self.left_icon.put_image_in_frame(frame)
         
         if self.close_detection.should_close(landmarks):
             self.close()

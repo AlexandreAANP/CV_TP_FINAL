@@ -1,5 +1,5 @@
 import cv2 as cv
-from Utils import replaceBackgroundOfImage, CreateMask
+from Utils import replace_background_of_image, create_mask
 import time
 from EventInteraction import EventInteraction
 from Events.OpenAppEvent import OpenAppEvent
@@ -15,21 +15,19 @@ class Icon(EventInteraction):
         self.height = int(Icon.HEIGHT * f)
         if flip:
             self.image = cv.flip(cv.imread(path), 1)
-            self.mask = CreateMask(cv.flip(cv.imread(path, cv.IMREAD_UNCHANGED),1))
+            self.mask = create_mask(cv.flip(cv.imread(path, cv.IMREAD_UNCHANGED),1))
         else:
             self.image = cv.imread(path)
-            self.mask = CreateMask(cv.imread(path, cv.IMREAD_UNCHANGED))
+            self.mask = create_mask(cv.imread(path, cv.IMREAD_UNCHANGED))
         self.image = cv.resize(self.image, (self.width, self.height))
-       
         self.mask = cv.resize(self.mask, (self.width, self.height))
-        self.IsInRange = False
-        self.beginClickTime = None
         self.isHidden = False
         self.event_type = None
+        self.timer = None
 
     def event(self, event, frame):
         if self.should_trigger_event(event):
-            if self.inRange(event.coords, frame):
+            if self.in_range(event.coords, frame):
                 OpenAppEvent(event.coords, self.name)
             else:
                 self.reset_event()
@@ -39,15 +37,15 @@ class Icon(EventInteraction):
     
     def show(self):
         self.isHidden = False
-    def putImageInFrame(self, screen):
+    def put_image_in_frame(self, screen):
         if self.isHidden:
             return screen
         partOfScreen = screen[self.y:self.y+self.height, self.x:self.x+self.width]
-        self.image = replaceBackgroundOfImage(self.image, partOfScreen, self.mask)
+        self.image = replace_background_of_image(self.image, partOfScreen, self.mask)
         screen[self.y:self.y+self.height, self.x:self.x+self.width] = self.image
         return screen
     
-    def inRange(self, coords, frame):
+    def in_range(self, coords, frame):
         if self.isHidden:
             return False
         return (coords[0]*frame.shape[1] >= self.x
@@ -55,11 +53,5 @@ class Icon(EventInteraction):
                 and coords[1]*frame.shape[0] >= self.y
                 and coords[1]*frame.shape[0] <= self.y + self.height)
     
-    def startClickTime(self):
-        if self.beginClickTime is None:
-            self.beginClickTime = time.time()
-    
-    def resetClickTime(self):
-        self.beginClickTime = None
         
         

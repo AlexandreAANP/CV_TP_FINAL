@@ -8,8 +8,9 @@ class EventInteraction(abc.ABC):
         self.event_type = None
         
     def should_trigger_event(self, event :Event):
-        if self.event_type == event.type:
+        if self.timer and self.event_type == event.type:
             if time.time() - self.timer > self.SECONDS_TO_TRIGGER_EVENT:
+                self.timer = None
                 return True
             else:
                 return False

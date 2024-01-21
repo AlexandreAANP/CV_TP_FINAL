@@ -19,7 +19,7 @@ class CloseDetection:
                     return True
     
     def __is_gesture_to_close(self, landmarks):
-        fingers_up = SelectEvent.detectWhichFingerIsUp(landmarks.right_hand_landmarks.landmark)  
+        fingers_up = SelectEvent.detect_which_finger_is_up(landmarks.right_hand_landmarks.landmark)  
         if len(fingers_up) == 4 and not "INDEX" in fingers_up:
             return True
         return False

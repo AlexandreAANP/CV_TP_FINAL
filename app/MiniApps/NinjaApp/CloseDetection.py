@@ -17,6 +17,7 @@ class CloseDetection:
                 if time.time() - self.timer > self.seconds_to_close:
                     self.timer = None
                     return True
+        return False
     
     
     def __are_arms_crossed(self, landmarks):
@@ -29,10 +30,23 @@ class CloseDetection:
         return self.__check_if_lines_cross_in_range(rigth_line, left_line, (0, self.width))
     
     def __convert_coords_to_pixel_position(self, coords:tuple):
+        x = coords[0]
+        y = coords[1]
+        if x < 0:
+            x = 0
+        if x > 1:
+            x = 1
+        if y < 0:
+            y = 0
+        if y > 1:
+            y = 1
         return (int(coords[0]*self.width), int(coords[1]*self.height))  
     
     def __check_if_lines_cross_in_range(self, line1:tuple, line2:tuple, range:tuple):
-        crossed_point_x = line2[1] - line1[1] / line1[0] - line2[0]
+        divisor = line1[0] - line2[0]
+        if divisor == 0:
+            return False
+        crossed_point_x = line2[1] - line1[1] / divisor
         if crossed_point_x > range[0] and crossed_point_x < range[1]:
             return True
         return False

@@ -16,19 +16,18 @@ class SelectEvent(Event):
         if landsmark is None:
             return None
         #The click should be detected when the finger 1 is the only one up
-        FingersUp = cls.detectWhichFingerIsUp(landsmark.landmark)
+        FingersUp = cls.detect_which_finger_is_up(landsmark.landmark)
         fingers_up = len(FingersUp.keys())
         if (fingers_up == 2 and "THUMB" in FingersUp.keys()) or fingers_up == 1:
             if cls.FINGER_SHOULD_BE_UP in FingersUp.keys():
                 coords = (FingersUp[cls.FINGER_SHOULD_BE_UP][0].x, FingersUp[cls.FINGER_SHOULD_BE_UP][0].y)
-                print(coords)
                 return SelectEvent(coords, SelectEvent)
         return None
     
 
     @classmethod
-    def detectWhichFingerIsUp(cls, landsmark):
-        listOfFingersUp = {
+    def detect_which_finger_is_up(cls, landsmark):
+        list_of_fingers_up = {
             #index: [points]
         }
         for index in cls.HAND.keys():
@@ -43,8 +42,8 @@ class SelectEvent(Event):
                     break
                 lastPoint = landsmark[key].y
             if isUp:
-                listOfFingersUp[index] = PointsList
-        return listOfFingersUp
+                list_of_fingers_up[index] = PointsList
+        return list_of_fingers_up
                 
     
 
