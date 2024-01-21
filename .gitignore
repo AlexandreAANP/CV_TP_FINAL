@@ -4,3 +4,4 @@ venv
 *.tmp
 __pycache__
 app\MiniApps\DrawApp\SavedDrawImages
+app/MiniApps/DrawApp/SavedDrawImages/

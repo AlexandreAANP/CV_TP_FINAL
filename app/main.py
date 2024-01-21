@@ -34,12 +34,12 @@ if __name__ == "__main__":
 
             frame = Mouse.get().run(results.right_hand_landmarks, frame)
 
-            for icon in MiniApp.getAllAppIcons():
+            for icon in MiniApp.get_all_app_icons():
                 icon.putImageInFrame(frame)
             
             
             
-            Controls.get().checkEvents(frame)
+            Controls.get().check_events(frame)
             
             #Should be the last command
             frame = cv.flip(frame, 1)

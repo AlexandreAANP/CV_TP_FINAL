@@ -5,13 +5,12 @@ from Icon import Icon
 from MiniApps.MiniApp import MiniApp
 from MiniApps.FaceReplaceApp.CloseDetection import CloseDetection
 from MiniApps.FaceReplaceApp.ImageFaceDetection import ImageFaceDetection
-from Events.SelectEvent import SelectEvent
-import time
+from Events.Event import Event
+from Events.CloseAppEvent import CloseAppEvent
+from EventInteraction import EventInteraction
 
-mp_holistic = mp.solutions.holistic
-mediapipe_detection = lambda image: holistic.process(cv.cvtColor(image, cv.COLOR_BGR2RGB))
 import os
-class FaceReplace(MiniApp):
+class FaceReplace(MiniApp, EventInteraction):
     __app_name = "FaceReplaceApp"
     __instance = None
     PATH = os.path.dirname(os.path.realpath(__file__)).replace("\MiniApps\FaceReplaceApp", "")
@@ -32,7 +31,16 @@ class FaceReplace(MiniApp):
         self.images_face_detected = self.__detect_faces_from_images(list_path_replace_face)
         self.faceIndex = 0
         self.isOpen = False
-        
+        self.event_type = None
+    
+    def event(self, event:Event, frame):
+        if self.should_trigger_event(event):
+            if self.in_range_left_icon(event.coords, frame):
+                self.change_face("left")
+                self.reset_event()
+            elif self.in_range_right_icon(event.coords, frame):
+                self.change_face("right")
+                self.reset_event()
         
     def change_face(self, direction):
         if direction == "left":
@@ -52,7 +60,8 @@ class FaceReplace(MiniApp):
         self.isOpen = True
     
     def close(self):
-        self.isOpen = False     
+        self.isOpen = False
+        CloseAppEvent((0,0), FaceReplace.__app_name)    
             
     def run(self,landmarks,frame):
         if not self.isOpen:
@@ -61,7 +70,7 @@ class FaceReplace(MiniApp):
         self.left_icon.putImageInFrame(frame)
         
         if self.close_detection.should_close(landmarks):
-            MiniApp.CloseAllApps()
+            self.close()
             
         if landmarks is None or landmarks.face_landmarks is None:
             return frame

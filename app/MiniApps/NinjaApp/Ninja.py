@@ -3,12 +3,10 @@ from Icon import Icon
 from MiniApps.NinjaApp.Animation import Animation
 from MiniApps.NinjaApp.AnimationFrame import AnimationFrame
 from MiniApps.NinjaApp.CloseDetection import CloseDetection
+from Events.CloseAppEvent import CloseAppEvent
 from Events.SelectEvent import SelectEvent
 import Utils
-import os
-import pickle
 import cv2 as cv
-import random
 
 class Ninja(MiniApp):
     __app_name = "Ninja"
@@ -42,6 +40,7 @@ class Ninja(MiniApp):
     def close(self):
         self.isOpen = False
         self.pontuation = 0
+        CloseAppEvent(None, Ninja.get_app_name())
     
     def run(self, landmarks, frame):
         if not self.isOpen:
@@ -55,7 +54,6 @@ class Ninja(MiniApp):
             self.animation.reset()
             self.animation = None
             self.close()
-            MiniApp.CloseAllApps()
             return frame
         
         animation_frame = self.animation.next() # get next frame

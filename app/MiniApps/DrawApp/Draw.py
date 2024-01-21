@@ -2,13 +2,14 @@ import cv2 as cv
 import numpy as np
 import Colors
 
-from Events.SelectEvent import SelectEvent
 from Icon import Icon
 from MiniApps.MiniApp import MiniApp
 from MiniApps.DrawApp.DrawGesture import DrawGesture
 from MiniApps.DrawApp.Paint import Paint
+from EventInteraction import EventInteraction
+from Events.CloseAppEvent import CloseAppEvent
 import Utils
-class Draw(MiniApp):    
+class Draw(MiniApp, EventInteraction):    
     __instance = None
     __app_name = "DrawApp"
     def __init__(self, width = 640, height = 480):
@@ -22,8 +23,19 @@ class Draw(MiniApp):
         self.width = width
         self.heigth = height
         self.isOpen = False
+        self.event_type = None
     
-        
+    def event(self, event, frame):
+        if self.should_trigger_event(event):
+            if self.in_range_close(event.coords, frame):
+                MiniApp.close_all_apps()
+                self.reset_event()
+            elif self.in_range_clear(event.coords, frame):
+                self.paint.clean_draw()
+                self.reset_event()
+            elif self.in_range_save(event.coords, frame):
+                self.paint.save()
+                self.reset_event()  
     def run(self, landmarks, frame):
         if not self.isOpen:
             return frame
@@ -61,13 +73,14 @@ class Draw(MiniApp):
         
     def open(self):
         self.clear_icon.show()
-        self.clear_icon.show()
+        self.save_icon.show()
         self.isOpen = True       
     
     def close(self):
         self.clear_icon.hide()
         self.save_icon.hide()
         self.isOpen = False
+        CloseAppEvent((0,0), Draw.__app_name)
         
     @classmethod
     def get(cls):

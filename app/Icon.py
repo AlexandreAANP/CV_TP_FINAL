@@ -1,7 +1,9 @@
 import cv2 as cv
 from Utils import replaceBackgroundOfImage, CreateMask
 import time
-class Icon:
+from EventInteraction import EventInteraction
+from Events.OpenAppEvent import OpenAppEvent
+class Icon(EventInteraction):
     WIDTH = 70
     HEIGHT = 70
     CLICK_TIME_SECONDS = 2
@@ -23,6 +25,14 @@ class Icon:
         self.IsInRange = False
         self.beginClickTime = None
         self.isHidden = False
+        self.event_type = None
+
+    def event(self, event, frame):
+        if self.should_trigger_event(event):
+            if self.inRange(event.coords, frame):
+                OpenAppEvent(event.coords, self.name)
+            else:
+                self.reset_event()
 
     def hide(self):
         self.isHidden = True
