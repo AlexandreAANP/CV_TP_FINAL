@@ -30,11 +30,11 @@ class Controls:
             return
         if time.time() - self.start > 2:
             if Draw.get().isOpen:
-                if self.Object == Draw.get().clearIcon:
+                if self.Object == Draw.get().clear_icon:
                     self.start = None
                     self.Object = None
                     Draw.get().clean()
-                if self.Object == Draw.get().saveIcon:
+                if self.Object == Draw.get().save_icon:
                     self.start = None
                     self.Object = None
                     Draw.get().save()
@@ -84,12 +84,12 @@ class Controls:
                         if FaceReplace.get().icon.inRange(event.coords, frame):
                             self.setObjectTime(event.coords, FaceReplace.get().icon)
                     elif oppened_app == Draw.get_app_name():
-                        if Draw.get().inRangeClose(event.coords, frame):
+                        if Draw.get().in_range_close(event.coords, frame):
                             self.setObjectTime(event.coords, Draw.get())
-                        if Draw.get().inRangeClear(event.coords, frame):
-                            self.setObjectTime(event.coords, Draw.get().clearIcon)
-                        if Draw.get().inRangeSave(event.coords, frame):
-                            self.setObjectTime(event.coords, Draw.get().saveIcon)
+                        if Draw.get().in_range_clear(event.coords, frame):
+                            self.setObjectTime(event.coords, Draw.get().clear_icon)
+                        if Draw.get().in_range_save(event.coords, frame):
+                            self.setObjectTime(event.coords, Draw.get().save_icon)
                 else:    
                     for icon in self.icons:
                         if icon.inRange(event.coords, frame):
