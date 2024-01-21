@@ -1,6 +1,5 @@
 import abc
 from Icon import Icon
-
 class MiniApp (abc.ABC):
     Apps = []
     def __init__(self, name, icon: Icon):
@@ -9,6 +8,13 @@ class MiniApp (abc.ABC):
         self.isOpen = False
         MiniApp.Apps.append(self)
 
+
+    @classmethod
+    def run_apps(cls, landmarks, frame):
+        if not cls.which_app_is_open():
+            return frame
+        
+        return cls.__which_app_is_open().run(landmarks, frame)
 
     @classmethod
     def getAllAppIcons(cls):
@@ -42,7 +48,13 @@ class MiniApp (abc.ABC):
                 return app.name
         else:
             return None
-    
+    @classmethod
+    def __which_app_is_open(cls):
+        for app in cls.Apps:
+            if app.isOpen:
+                return app
+        else:
+            return None
     @classmethod
     def CloseAllApps(cls):
         for app in cls.Apps:

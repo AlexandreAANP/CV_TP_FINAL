@@ -15,11 +15,11 @@ class FaceReplace(MiniApp):
     
     PATH_ARROW_ICON = PATH+"\\images\\FaceReplaceApp\\arrow.png"
     
-    def __init__(self, path: str, width, height):
+    def __init__(self, width, height):
         FaceReplace.__instance = self
         super().__init__(FaceReplace.__app_name,
                          Icon(Utils.PROJECT_PATH+"/images/obama.png",(0,45), FaceReplace.__app_name))
-        listPathReplaceFace = Utils.getAllFilesPathFromFolder(path)
+        listPathReplaceFace = Utils.getAllFilesPathFromFolder(Utils.PROJECT_PATH+ "/images/FaceReplaceApp/faces/")
         self.rigth_icon = Icon(FaceReplace.PATH_ARROW_ICON, (0,int(height/2 - Icon.HEIGHT/2)), "FaceReplaceApp_Arrow_Left", flip = True)
         self.left_icon = Icon(FaceReplace.PATH_ARROW_ICON, (width-70,int(height/2 - Icon.HEIGHT/2)), "FaceReplaceApp_Arrow_Rigth", flip=False)
         self.faces_landsmarks = []

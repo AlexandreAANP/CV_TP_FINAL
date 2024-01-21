@@ -17,8 +17,8 @@ class Draw(MiniApp):
         super().__init__(Draw.__app_name,
                          Icon(Utils.PROJECT_PATH+"/images/DrawAppLogo.png",(width-Icon.WIDTH,9), Draw.__app_name))
         Draw.__instance = self
-        self.clearIcon = Icon(drawIconPath, (0, int(height*0.25)),"cleanIcon", 0.5, False)
-        self.saveIcon = Icon(saveIconPath, (0, int(height*0.25)+10+self.clearIcon.height),"saveIcon", 0.5, False)
+        self.clearIcon = Icon(Utils.PROJECT_PATH+"/images/Draw/newPage.png", (0, int(height*0.25)),"cleanIcon", 0.5, False)
+        self.saveIcon = Icon(Utils.PROJECT_PATH+"/images/Draw/save.png", (0, int(height*0.25)+10+self.clearIcon.height),"saveIcon", 0.5, False)
         self.landmarks = None
         self.width = width
         self.heigth = height 

@@ -4,7 +4,6 @@ from Events.OpenAppEvent import OpenAppEvent
 from Events.CloseAppEvent import CloseAppEvent
 from MiniApps.DrawApp.Draw import Draw
 from MiniApps.FaceReplaceApp.FaceReplace import FaceReplace
-from MiniApps.AvoidObjects.AvoidObjects import AvoidObjects
 from MiniApps.MiniApp import MiniApp
 from Icon import Icon
 import cv2 as cv

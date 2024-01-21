@@ -36,6 +36,12 @@ class Ninja(MiniApp):
         
         self.__generate_animation()
     
+    def open(self):
+        self.isOpen = True
+    
+    def close(self):
+        self.isOpen = False
+        self.pontuation = 0
     
     def run(self, landmarks, frame):
         if not self.isOpen:
@@ -44,37 +50,39 @@ class Ninja(MiniApp):
         if not self.animation:
             self.animation = Animation.get_random_animation()
             self.animation.start()
-        
+        #check if is should close app
         if self.closeDetection.should_close(landmarks):
             self.animation.reset()
             self.animation = None
             self.close()
             MiniApp.CloseAllApps()
             return frame
-        animation_frame = self.animation.next()
+        
+        animation_frame = self.animation.next() # get next frame
         if not animation_frame:
-            self.animation.reset()
+            self.animation.reset() # reset animation
             self.animation = None
-            frame = self.put_pontuation_in_frame(frame)
+            frame = self.__put_pontuation_in_frame(frame)
             return frame
-        frame = self.put_animation_in_frame(animation_frame, frame)
+        
+        frame = self.__put_animation_in_frame(animation_frame, frame)
         #to catch an object, the hand should be open before
-        if self.catch_animation_object(animation_frame, landmarks):
+        if self.__catch_animation_object(animation_frame, landmarks):
             #increment pontuation
             self.pontuation += 1
             #reset animation and put as None to next run() get other animation
             self.animation.reset()
             self.animation = None
-        frame = self.put_pontuation_in_frame(frame)                      
+        frame = self.__put_pontuation_in_frame(frame)                      
         return frame
     
-    def put_pontuation_in_frame(self, frame):
+    def __put_pontuation_in_frame(self, frame):
         frame = cv.flip(frame, 1)
         frame = cv.putText(frame, "Pontuation: "+str(self.pontuation), (0, 50), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv.LINE_AA)
         frame = cv.flip(frame, 1)
         return frame
     
-    def catch_animation_object(self, animationFrame: AnimationFrame, landsmarks):
+    def __catch_animation_object(self, animationFrame: AnimationFrame, landsmarks):
         if not animationFrame:
             return False     
         if landsmarks.right_hand_landmarks:
@@ -126,12 +134,6 @@ class Ninja(MiniApp):
             return Utils.replaceBackgroundOfImage(animation_frame.img, frame, animation_frame.mask)
         return frame
     
-    def open(self):
-        self.isOpen = True
-    
-    def close(self):
-        self.isOpen = False
-        self.pontuation = 0
     
     @classmethod
     def get_app_name(cls):
