@@ -42,11 +42,11 @@ class Controls:
                 if self.Object == FaceReplace.get().left_icon:
                     self.start = None
                     self.Object = None
-                    FaceReplace.get().changeFace("left")
+                    FaceReplace.get().change_face("left")
                 elif self.Object == FaceReplace.get().rigth_icon:
                     self.start = None
                     self.Object = None
-                    FaceReplace.get().changeFace("right")
+                    FaceReplace.get().change_face("right")
 
            
             if type(self.Object) is Icon:
@@ -77,9 +77,9 @@ class Controls:
                 if oppened_app:
                     print(oppened_app)
                     if oppened_app == FaceReplace.get_app_name():
-                        if FaceReplace.get().inRangeLeftIcon(event.coords, frame):
+                        if FaceReplace.get().in_range_left_icon(event.coords, frame):
                             self.setObjectTime(event.coords, FaceReplace.get().left_icon)
-                        if FaceReplace.get().inRangeRightIcon(event.coords, frame):
+                        if FaceReplace.get().in_range_right_icon(event.coords, frame):
                             self.setObjectTime(event.coords, FaceReplace.get().rigth_icon)
                         if FaceReplace.get().icon.inRange(event.coords, frame):
                             self.setObjectTime(event.coords, FaceReplace.get().icon)
