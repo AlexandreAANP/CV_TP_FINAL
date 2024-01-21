@@ -90,7 +90,7 @@ class Ninja(MiniApp):
             if  len(fingersUp) <2:
                 if self.right_hand_is_closed == False:
                     self.right_hand_is_closed = True
-                    return self.check_area_intersectation(self.landmarks_area(landsmarks.right_hand_landmarks), animationFrame.start_end_points)
+                    return self.__check_area_intersectation(self.__landmarks_area(landsmarks.right_hand_landmarks), animationFrame.start_end_points)
                 else:
                     return False
             self.right_hand_is_closed = False
@@ -100,7 +100,7 @@ class Ninja(MiniApp):
             if len(fingersUp) <2:
                 if self.left_hand_is_closed == False:
                     self.left_hand_is_closed = True
-                    return self.check_area_intersectation(self.landmarks_area(landsmarks.left_hand_landmarks), animationFrame.start_end_points)
+                    return self.__check_area_intersectation(self.__landmarks_area(landsmarks.left_hand_landmarks), animationFrame.start_end_points)
                 else:
                     return False
             return False
@@ -108,7 +108,7 @@ class Ninja(MiniApp):
         
         
         
-    def landmarks_area(self, landmarks):
+    def __landmarks_area(self, landmarks):
         if not landmarks:
             return None
         x = []
@@ -122,27 +122,18 @@ class Ninja(MiniApp):
         y_max = max(y) * self.height if max(y) * self.height < self.height else self.height
         return ((int(x_min), int(y_min)), (int(x_max), int(y_max)))
        
-    def check_area_intersectation(self, a, b):
+    def __check_area_intersectation(self, a, b):
         # returns None if rectangles don't intersect
         dx = min(a[1][0], b[1][0]) - max(a[0][0], b[0][0])
         dy = min(a[1][1], b[1][1]) - max(a[0][1], b[0][1])
         if (dx>=0) and (dy>=0):
             return True
         return False   
-    def put_animation_in_frame(self, animation_frame: AnimationFrame, frame):
+    def __put_animation_in_frame(self, animation_frame: AnimationFrame, frame):
         if animation_frame:
             return Utils.replaceBackgroundOfImage(animation_frame.img, frame, animation_frame.mask)
         return frame
     
-    
-    @classmethod
-    def get_app_name(cls):
-        return cls.__app_name
-    @classmethod    
-    def get(cls):
-        if cls.__instance:
-            return cls.__instance
-        raise Exception("Ninja not initialized")    
     def __generate_animation(self):
         for animation in Ninja.ANIMATIONS:
             self.animations.append(Animation(
@@ -152,6 +143,16 @@ class Ninja(MiniApp):
                 self.width,
                 self.height
             ))
+    
+    @classmethod
+    def get_app_name(cls):
+        return cls.__app_name
+    @classmethod    
+    def get(cls):
+        if cls.__instance:
+            return cls.__instance
+        raise Exception("Ninja not initialized")    
+    
     
     
     

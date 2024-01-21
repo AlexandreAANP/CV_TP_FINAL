@@ -100,7 +100,6 @@ class Animation():
         path_animation, path_animation_mask = self.paths
         
         for path in Utils.getAllFilesPathFromFolder(path_animation):
-            print(path)
             images.append(cv.resize(cv.imread(path),(self.width, self.height)))
             
         for path in Utils.getAllFilesPathFromFolder(path_animation_mask):
@@ -126,7 +125,6 @@ class Animation():
                 self.frames = pickle.load(file)
             return True
         except Exception as e:
-            print(e)
             return False
     
     def __cache_animation(self):
@@ -134,20 +132,6 @@ class Animation():
             pickle.dump(self.frames, file)
     
     def __calculate_object_shape(self, mask):
-        d= {
-            "lowerX": mask.shape[1],
-            "lowerY": mask.shape[0],
-            "higherX": 0,
-            "higherY": 0
-        }
-        self.__get_lower_and_higher(mask, d)
-        start_point = (d["lowerX"], d["lowerY"])
-        end_point = (d["higherX"], d["higherY"])
-        if d["lowerX"] == mask.shape[1] or d["lowerY"] == mask.shape[0] or d["higherX"] == 0 or d["higherY"] == 0:
-            return ((0,0),(0,0))
-        return (start_point, end_point)
-    
-    def __get_lower_and_higher(self, mask, initial_values:dict):
         y_list = []
         x_list = []
         for y,line in enumerate(mask):
@@ -159,11 +143,12 @@ class Animation():
                     x_list.append(x)
                 elif flag:
                     break
-        initial_values["lowerX"] = min(x_list)
-        initial_values["higherX"] = max(x_list)
-        initial_values["lowerY"] = min(y_list)
-        initial_values["higherY"] = max(y_list)
-        
-        return initial_values
+        if len(x_list) == 0:
+            x_list.append(0)
+            x_list.append(mask.shape[1])
+        if len(y_list) == 0:
+            y_list.append(0)
+            y_list.append(mask.shape[0])
+        return ((min(x_list),min(y_list)),(max(x_list),max(y_list)))
         
         
