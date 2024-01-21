@@ -71,6 +71,8 @@ def CreateMask(img, BackgroundColor = (0,0,0)):
             for o in i:
                 if o[0]==BackgroundColor[0] and o[1]==BackgroundColor[1] and o[2]==BackgroundColor[2]:
                     o[3] = 0
+                else:
+                    print(o)
     ret, mask = cv.threshold(img[:, :, 3], 0, 255, cv.THRESH_BINARY)
     return mask
 

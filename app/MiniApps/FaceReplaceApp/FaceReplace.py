@@ -3,6 +3,8 @@ import cv2 as cv
 import mediapipe as mp
 from Icon import Icon
 from MiniApps.MiniApp import MiniApp
+from Events.SelectEvent import SelectEvent
+import time
 mp_holistic = mp.solutions.holistic
 mediapipe_detection = lambda image: holistic.process(cv.cvtColor(image, cv.COLOR_BGR2RGB))
 import os
@@ -64,13 +66,37 @@ class FaceReplace(MiniApp):
     def inRangeRightIcon(self, coords, frame):
         return self.rigth_icon.inRange(coords, frame)
             
-      
+    def is_gesture_to_close(self, landmarks, frame):
+        if not landmarks or not landmarks.right_hand_landmarks:
+            return False
+        fingers_up = SelectEvent.detectWhichFingerIsUp(landmarks.right_hand_landmarks.landmark)  
+        if len(fingers_up) == 4 and not "INDEX" in fingers_up:
+            return True
+        return False
+            
+    def start_time(self):
+        if self.start is None:
+            self.start = time.time()
+        
+    def reset_time(self):
+        self.start = None
+        
         
     def run(self,landmarks,frame):
         if not self.isOpen:
             return frame
         self.rigth_icon.putImageInFrame(frame)
         self.left_icon.putImageInFrame(frame)
+        #Check exit
+        if self.is_gesture_to_close(landmarks, frame):
+            print("Closing FaceReplaceApp")
+            self.start_time()
+            if time.time() - self.start > 2:
+                self.reset_time()
+                MiniApp.CloseAllApps()
+                return frame
+        else:
+            self.reset_time()
         if landmarks is None or landmarks.face_landmarks is None:
             return frame
 

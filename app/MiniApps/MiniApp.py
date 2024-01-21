@@ -29,14 +29,10 @@ class MiniApp (abc.ABC):
             raise Exception("App not found")
         for app in cls.Apps:
             app.icon.hide()
-            #app.icon.hide() if app.name != FaceReplace.get_app_name() and FaceReplace.get().isOpen else app.icon.show()
             if app.name == appName:
                 app.open()
             else:
                 app.close()
-            from MiniApps.FaceReplaceApp.FaceReplace import FaceReplace
-            if app.name == FaceReplace.get_app_name() and FaceReplace.get().isOpen:
-                app.icon.show()
         return True
     
     @classmethod

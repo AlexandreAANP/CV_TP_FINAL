@@ -40,7 +40,6 @@ class Controls:
                     self.Object = None
                     Draw.get().save()
             if FaceReplace.get().isOpen:
-                print(self.Object, FaceReplace.get().icon)
                 if self.Object == FaceReplace.get().left_icon:
                     self.start = None
                     self.Object = None
@@ -49,12 +48,7 @@ class Controls:
                     self.start = None
                     self.Object = None
                     FaceReplace.get().changeFace("right")
-                elif self.Object == FaceReplace.get().icon:
-                    self.start = None
-                    self.Object = None
-                    print("Colsingall apps")
-                    MiniApp.CloseAllApps()
-                    print(MiniApp.which_app_is_open())
+
            
             if type(self.Object) is Icon:
                 to_open = MiniApp.get_app_by_icon(self.Object)

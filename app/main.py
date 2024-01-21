@@ -56,11 +56,13 @@ from Controls import Controls
 from MiniApps.DrawApp.Draw import Draw
 from MiniApps.FaceReplaceApp.FaceReplace import FaceReplace
 from MiniApps.AvoidObjects.AvoidObjects import AvoidObjects
+from MiniApps.NinjaApp.Ninja import Ninja
 from Mouse import Mouse
 if __name__ == "__main__":
     PROJECT_PATH
     cap = cv.VideoCapture(0)
     _, frame = cap.read()
+    Ninja(frame.shape[1], frame.shape[0])
     Mouse()
     AvoidObjects(
        PROJECT_PATH+"/images/AvoidObjectsApp/Animations/animationsImages/",
@@ -92,16 +94,21 @@ if __name__ == "__main__":
             frameToShow = AvoidObjects.get().run(results, frameToShow)
             frameToShow = Draw.get().run(results, frameToShow)
             frameToShow = FaceReplace.get().run(results, frameToShow)
-            frameToShow = Mouse.get().run(results.right_hand_landmarks, frameToShow) if results.right_hand_landmarks else frameToShow
-            #TO Remove
-            if results.right_hand_landmarks:
-                testPoseLandmarks(results.right_hand_landmarks.landmark, testFrame) #TO REMOVE
+            frameToShow = Ninja.get().run(results, frameToShow)
+            frameToShow = Mouse.get().run(results.right_hand_landmarks, frameToShow)
+            
             #TO REMOVE
-            if results.left_hand_landmarks is not None:
-                testPoseLandmarks(results.left_hand_landmarks.landmark, testFrame) #TO REMOVE
+            if results.pose_landmarks:
+                testPoseLandmarks(results.pose_landmarks.landmark, testFrame)
+            #TO Remove
+            #if results.right_hand_landmarks:
+             #   testPoseLandmarks(results.right_hand_landmarks.landmark, testFrame) #TO REMOVE
+            #TO REMOVE
+            #if results.left_hand_landmarks is not None:
+              #  testPoseLandmarks(results.left_hand_landmarks.landmark, testFrame) #TO REMOVE
             
             #cv.imshow("Frame", frame)
-            
+            testFrame = cv.rectangle(testFrame, (65,64), (79, 85), (255,0,255), -1)
             cv.imshow("TestFrame", testFrame)
             
             for icon in MiniApp.getAllAppIcons():

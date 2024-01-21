@@ -7,7 +7,9 @@ class AvoidObjects(MiniApp):
     __app_name = "AvoidObjects"
     instance = None
     def __init__(self, path_animations: str, path_animations_mask: str, width : int, height: int):
-        super().__init__(AvoidObjects.__app_name, Icon(Utils.PROJECT_PATH+"/images/obama.png",(45,0), AvoidObjects.__app_name))
+        super().__init__(AvoidObjects.__app_name, 
+                         Icon(Utils.PROJECT_PATH+"/images/AvoidObjectsLogo.png",(0,45+Icon.HEIGHT+10),
+                        AvoidObjects.__app_name))
         AvoidObjects.instance = self
         
         self.animation = []
