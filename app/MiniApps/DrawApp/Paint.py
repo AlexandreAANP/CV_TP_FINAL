@@ -15,18 +15,24 @@ class Paint():
         self.height = height
         self.base_frame = self.__draw_base_background()
         self.paint = self.base_frame.copy()
+        self.last_point = None
 
         
     def get_draw(self):
         self.paint = self.__draw_nav_bar(self.paint)
         return self.paint.copy()
     def draw_point(self, coords, color):
-        self.paint = cv.circle(self.paint, (int(coords[0]*self.paint.shape[1]), int(coords[1]*self.paint.shape[0])), 5, color, -1)
+        if self.last_point:
+            self.paint = cv.line(self.paint, (int(self.last_point[0]*self.paint.shape[1]), int(self.last_point[1]*self.paint.shape[0])), (int(coords[0]*self.paint.shape[1]), int(coords[1]*self.paint.shape[0])), color, 5)
+        else:
+            self.paint = cv.circle(self.paint, (int(coords[0]*self.paint.shape[1]), int(coords[1]*self.paint.shape[0])), 5, color, -1)
+        self.last_point = coords
     
     def clean_point(self, coords):
         self.paint = cv.circle(self.paint, (int(coords[0]*self.paint.shape[1]), int(coords[1]*self.paint.shape[0])), 20, Colors.WHITE, -1)
     
     def clean_draw(self):
+        self.last_point = None
         self.paint = self.base_frame.copy()
         
     def save(self):
